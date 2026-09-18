@@ -1,6 +1,7 @@
 package com.webizera.taskmanager.controller;
 import com.webizera.taskmanager.entity.Task;
 import com.webizera.taskmanager.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,10 +24,8 @@ public class TaskController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Task> getTaskById(@PathVariable Long id){
-        return taskService.getTaskById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public Task getTaskById(@PathVariable Long id){
+        return taskService.getTaskById(id);
     }
 
     @GetMapping("/isCompleted/{status}")
@@ -40,23 +39,20 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody Task task){
+    public ResponseEntity<Task> createTask(@Valid @RequestBody Task task){
         Task savedTask = taskService.createTask(task);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedTask);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task updatedTask){
-        return taskService.updateTask(id, updatedTask)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public Task updateTask(@PathVariable Long id,
+                           @Valid @RequestBody Task updatedTask){
+        return taskService.updateTask(id, updatedTask);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(@PathVariable Long id){
-
-        return taskService.deleteTask(id) ?
-                ResponseEntity.ok().build() :
-                ResponseEntity.notFound().build();
+        taskService.deleteTask(id);
+        return ResponseEntity.ok().build();
     }
 }
